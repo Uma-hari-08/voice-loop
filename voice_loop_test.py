@@ -1,27 +1,26 @@
+import streamlit as st
 import sounddevice as sd
 import numpy as np
 import time
 
-# Parameters
-record_duration = 5  # seconds to record
-loop_minutes = 1  # total loop time in minutes
-interval_between_loops = 10  # seconds to wait between playbacks
+fs = 44100
 
-fs = 44100  # sample rate
-
-print("Recording started now, tell something...")
-recording = sd.rec(int(record_duration * fs), samplerate=fs, channels=1, dtype='float32')
-sd.wait()
-print("Recording finished.")
-
-# Loop playback with delay
-end_time = time.time() + (loop_minutes * 60)
-while time.time() < end_time:
-    print("Playing recorded audio...")
-    sd.play(recording, samplerate=fs)
+def record_and_loop(duration_sec, loop_minutes):
+    st.info("Recording started...")
+    recording = sd.rec(int(duration_sec * fs), samplerate=fs, channels=1, dtype='float32')
     sd.wait()
+    st.success("Recording finished. Looping now...")
 
-    print(f"Waiting {interval_between_loops} seconds before replaying...")
-    time.sleep(interval_between_loops)
+    end_time = time.time() + (loop_minutes * 60)
+    while time.time() < end_time:
+        sd.play(recording, samplerate=fs)
+        sd.wait()
 
-print("Done looping.")
+    st.success("Done looping!")
+
+st.title("Voice Loop App")
+duration = st.slider("Record Duration (seconds)", 1, 10, 5)
+loop_time = st.slider("Loop Time (minutes)", 1, 5, 1)
+
+if st.button("Start Recording and Loop"):
+    record_and_loop(duration, loop_time)
