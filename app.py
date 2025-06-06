@@ -6,7 +6,7 @@ import time
 fs = 44100
 
 def record_and_loop(duration_sec, loop_minutes):
-    st.info("Recording started...")
+    st.info("Recording started....")
     recording = sd.rec(int(duration_sec * fs), samplerate=fs, channels=1, dtype='float32')
     sd.wait()
     st.success("Recording finished. Looping now...")
